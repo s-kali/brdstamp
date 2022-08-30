@@ -12,6 +12,7 @@ int main(int argc, char *argv[]){
   int sock;
   struct sockaddr_in broadcastAddr;
   char *broadcastIP;
+  unsigned short broadcastPort;
   int broadcastPermission;
   unsigned int timestampLen;
 
@@ -41,6 +42,10 @@ int main(int argc, char *argv[]){
   if(setsockopt(sock, SOL_SOCKET, SO_BROADCAST, (void *) &broadcastPermission, sizeof(broadcastPermission)) < 0)
   throwError("setsockopt() failed!")
 
-  memset()
+  memset(&broadcastAddr, 0, sizeof(broadcastAddr));
+  broadcastAddr.sin_family = AF_INET;
+  broadcastAddr.sin_addr.s_addr = inet_addr(broadcastIP); /*Convert IPv4 to binary data in network byte order*/
+  broadcastAddr.sin_port = htons(broadcastPort) /*Conver unsigned short integer from host byte order to network byte order*/
+
 
 }
