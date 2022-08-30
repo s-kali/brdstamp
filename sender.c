@@ -10,7 +10,7 @@ throwError(string *errorString){
 
 int main(int argc, char *argv[]){
   int sock;
-  struct sockaddr_in broadcastIP;
+  struct sockaddr_in broadcastAddr;
   char *broadcastIP;
   int broadcastPermission;
   unsigned int timestampLen;
