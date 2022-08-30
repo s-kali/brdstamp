@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <sys/time.h>
@@ -20,7 +21,7 @@ int main(int argc, char *argv[]){
 
   struct timeval time;
 
-  char timestr[sizeof(int)*8+1];
+  char timestr[20];
   unsigned int timestrlen = sizeof timestr;
 
   if(argc < 3){
@@ -55,6 +56,13 @@ int main(int argc, char *argv[]){
   broadcastAddr.sin_port = htons(broadcastPort); /*Conver unsigned short integer from host byte order to network byte order*/
 
   gettimeofday(&time, NULL);
-  snprintf(timestr, timestrlen, "%d", time.tv_sec);
-  printf("time: %s\n", timestr);
+  snprintf(timestr, timestrlen, "%d", time.tv_sec); /*Conver int to string*/
+
+  for(;;){
+    if(sendto(sock, timestr, timestrlen, 0, (struct sockaddr *)&broadcastAddr, sizeof(broadcastAddr)) != timestrlen)
+    throwError("sendto() sent a different number of bytes than expected");
+
+    sleep(3);
+  }
+
 }
