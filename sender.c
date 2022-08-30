@@ -55,10 +55,12 @@ int main(int argc, char *argv[]){
   broadcastAddr.sin_addr.s_addr = inet_addr(broadcastIP); /*Convert IPv4 to binary data in network byte order*/
   broadcastAddr.sin_port = htons(broadcastPort); /*Conver unsigned short integer from host byte order to network byte order*/
 
-  gettimeofday(&time, NULL);
-  snprintf(timestr, timestrlen, "%d", time.tv_sec); /*Conver int to string*/
 
   for(;;){
+
+    gettimeofday(&time, NULL);
+    snprintf(timestr, timestrlen, "%d", time.tv_sec); /*Conver int to string*/
+
     if(sendto(sock, timestr, timestrlen, 0, (struct sockaddr *)&broadcastAddr, sizeof(broadcastAddr)) != timestrlen)
     throwError("sendto() sent a different number of bytes than expected");
 
