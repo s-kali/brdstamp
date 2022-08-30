@@ -1,23 +1,30 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/socker.h>
+#include <string.h>
+#include <sys/socket.h>
 #include <arpa/inet.h>
+#include <sys/time.h>
 
-throwError(string *errorString){
+void throwError(char *errorString){
   perror(errorString);
   exit(1);
 }
 
 int main(int argc, char *argv[]){
+
   int sock;
   struct sockaddr_in broadcastAddr;
   char *broadcastIP;
   unsigned short broadcastPort;
   int broadcastPermission;
-  unsigned int timestampLen;
+
+  struct timeval time;
+
+  char timestr[sizeof(int)*8+1];
+  unsigned int timestrlen = sizeof timestr;
 
   if(argc < 3){
-    fprintf(stderr, "Usage: %s <IP Address> <Port> \n", argv[0])
+    fprintf(stderr, "Usage: %s <IP Address> <Port> \n", argv[0]);
     exit(1);
   }
 
@@ -29,7 +36,7 @@ int main(int argc, char *argv[]){
    * type -> Type of socket DGRAM\ send/recieve point for packet delivery service
    * protocol -> Protocol of socket(TCP, UDP, 0 for default)
   */
-  sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)
+  sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
   if(sock<0)
   throwError("socker() failed!");
@@ -40,12 +47,14 @@ int main(int argc, char *argv[]){
    * option_name -> socket option SO_BROADCAST\ sending broadcast messages
    */
   if(setsockopt(sock, SOL_SOCKET, SO_BROADCAST, (void *) &broadcastPermission, sizeof(broadcastPermission)) < 0)
-  throwError("setsockopt() failed!")
+  throwError("setsockopt() failed!");
 
   memset(&broadcastAddr, 0, sizeof(broadcastAddr));
   broadcastAddr.sin_family = AF_INET;
   broadcastAddr.sin_addr.s_addr = inet_addr(broadcastIP); /*Convert IPv4 to binary data in network byte order*/
-  broadcastAddr.sin_port = htons(broadcastPort) /*Conver unsigned short integer from host byte order to network byte order*/
+  broadcastAddr.sin_port = htons(broadcastPort); /*Conver unsigned short integer from host byte order to network byte order*/
 
-
+  gettimeofday(&time, NULL);
+  snprintf(timestr, timestrlen, "%d", time.tv_sec);
+  printf("time: %s\n", timestr);
 }
