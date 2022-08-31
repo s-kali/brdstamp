@@ -33,4 +33,8 @@ int main(int argc, char *argv[]){
   broadcastAddr.sin_addr.s_addr = htonl(INADDR_ANY);
   broadcastAddr.sin_port = htons(broadcastPort);
 
+  if(bind(sock, (struct sockaddr *)&broadcastAddr), sizeof(broadcastAddr)) < 0)
+    throwError("bind() failed");
+
+
 }
