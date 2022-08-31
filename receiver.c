@@ -3,6 +3,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/socket.h>
+#include <sys/time.h>
 #include <arpa/inet.h>
 
 void throwError(char *errorString){
@@ -17,7 +18,7 @@ void print_ip(unsigned int ip)
     bytes[1] = (ip >> 8) & 0xFF;
     bytes[2] = (ip >> 16) & 0xFF;
     bytes[3] = (ip >> 24) & 0xFF;
-    printf("%d.%d.%d.%d\n", bytes[3], bytes[2], bytes[1], bytes[0]);
+    printf("%d.%d.%d.%d", bytes[3], bytes[2], bytes[1], bytes[0]);
 }
 
 int main(int argc, char *argv[]){
@@ -29,8 +30,14 @@ int main(int argc, char *argv[]){
 
   struct sockaddr_in broadcastAddr;
   unsigned short broadcastPort;
+
   char recvString[20];
   int recvStringLen;
+  int recvasInt;
+
+  struct timeval time;
+  char timestr[20];
+  unsigned int timestrlen = sizeof timestr;
 
   if(argc < 2){
     fprintf(stderr, "Usage: %s <Broadcast Port>\n", argv[0]);
@@ -51,15 +58,19 @@ int main(int argc, char *argv[]){
 	 sizeof(broadcastAddr)) < 0)
     throwError("bind() failed");
 
-
   for(;;){
-  if((recvStringLen = recvfrom(sock, recvString, 20,
-	 0, (struct sockaddr*)&msgSender, &msgLen)) < 0)
-    throwError("recvfrom() failed");
 
-  recvString[recvStringLen] = '\0';
-  printf("Recieved: %s from ", recvString);
-  print_ip(ntohl(msgSender.sin_addr.s_addr));
+    if((recvStringLen = recvfrom(sock, recvString, 20,
+  	   0, (struct sockaddr*)&msgSender, &msgLen)) < 0)
+      throwError("recvfrom() failed");
+
+    recvString[recvStringLen] = '\0';
+    gettimeofday(&time, NULL);
+    recvasInt = atoi(recvString);
+
+    printf("Received time: %s from ", recvString);
+    print_ip(ntohl(msgSender.sin_addr.s_addr));
+    printf(" Time on host: %d, time diff = %d\n", time.tv_sec, (time.tv_sec-recvasInt));
   }
 
   close(sock);
