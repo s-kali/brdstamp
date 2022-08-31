@@ -57,7 +57,7 @@ int main(int argc, char *argv[]){
   for(;;){
 
     gettimeofday(&time, NULL);
-    snprintf(timestr, timestrlen, "%d", time.tv_sec); /*Conver int to string*/
+    snprintf(timestr, timestrlen, "%ld", time.tv_sec); /*Conver int to string*/
 
     if(sendto(sock, timestr, timestrlen, 0, (struct sockaddr *)&broadcastAddr, sizeof(broadcastAddr)) != timestrlen)
       throwError("sendto() sent a different number of bytes than expected");

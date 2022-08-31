@@ -70,7 +70,7 @@ int main(int argc, char *argv[]){
 
     printf("Received time: %s from ", recvString);
     print_ip(ntohl(msgSender.sin_addr.s_addr));
-    printf(" Time on host: %d, time diff = %d\n", time.tv_sec, (time.tv_sec-recvasInt));
+    printf(" Time on host: %ld, time diff = %ld\n", time.tv_sec, (time.tv_sec-recvasInt));
   }
 
   close(sock);
