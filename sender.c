@@ -37,10 +37,8 @@ int main(int argc, char *argv[]){
    * type -> Type of socket DGRAM\ send/recieve point for packet delivery service
    * protocol -> Protocol of socket(TCP, UDP, 0 for default)
   */
-  sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
-
-  if(sock<0)
-  throwError("socker() failed!");
+  if((sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0)
+    throwError("socker() failed!");
 
   /* setsockopt(int socket, int level, int option_name,
    *    const void *option_value, sockklen_t option_len);
@@ -48,7 +46,7 @@ int main(int argc, char *argv[]){
    * option_name -> socket option SO_BROADCAST\ sending broadcast messages
    */
   if(setsockopt(sock, SOL_SOCKET, SO_BROADCAST, (void *) &broadcastPermission, sizeof(broadcastPermission)) < 0)
-  throwError("setsockopt() failed!");
+    throwError("setsockopt() failed!");
 
   memset(&broadcastAddr, 0, sizeof(broadcastAddr));
   broadcastAddr.sin_family = AF_INET;
@@ -62,7 +60,7 @@ int main(int argc, char *argv[]){
     snprintf(timestr, timestrlen, "%d", time.tv_sec); /*Conver int to string*/
 
     if(sendto(sock, timestr, timestrlen, 0, (struct sockaddr *)&broadcastAddr, sizeof(broadcastAddr)) != timestrlen)
-    throwError("sendto() sent a different number of bytes than expected");
+      throwError("sendto() sent a different number of bytes than expected");
 
     sleep(3);
   }
